@@ -22,6 +22,7 @@ ________________________________________________________________________________
 #define GRAPHS_H
 #include <string>
 #include "Edge.h"
+#include <limits>
 using namespace std;
 
 const int Vmax = 50;					// Maximum number of vertices
@@ -47,7 +48,7 @@ public:
     void dispEdges() const;			// Display Graph edges
     void DFS();				// Depth First Search Traversal (DFS)
     void shPath(int s);			// Shortest paths from node (s)
-
+    void printPath(int s,int i) const;	// Print path from source (s) to destination (i)
 //______________________________________________________________________________________________
 
 
@@ -63,8 +64,8 @@ private:
     int val[Vmax];			// Array holding order of traversal of nodes
     void getEdges();			// Get Non-Zero edges from adjacency matrix
     void printEdge(Edge e) const;	// Output an edge (e)
-    void printPath(int s,int i) const;	// Print path from source (s) to destination (i)
-    void visit(int k);			// Node Visit Function (needed for DFS)
+    void visit(int i);			// Node Visit Function (needed for DFS)
+
 };
 #endif // GRAPHS_H
 

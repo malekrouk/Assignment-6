@@ -7,6 +7,7 @@
 #include <iomanip>
 #include "Edge.h"// Deinition of an Edge
 #include "Graphs.h"
+#include <limits>
 
 using namespace std;
 
@@ -30,25 +31,38 @@ char Graphs::Vname(const int s) const
 
 // Get Graph from text File (file name is stored in string fname)
 // Graph is stored in adjacency matrix
-void Graphs::getGraph(string fname)
-{
+void Graphs::getGraph(string fname) {
     // Local data ...
     weightType wi;
     ifstream source;
-
+    string line;
     source.open(fname.c_str());
-    source >> V;	// Read no. of verices (V)
+    string convert;
+    int n;
+    int row = 0;
+   // int i=0;
 
-    // Input weights from the file into a 2-D
-    // Adjacency Matrix of V rows and V columns
-    for (int r = 0; r < V; r++)
-    {
-        // get V weights for row [r] from file
-        // put V weights in adjacency matrix at row [r]
+
+   // source >> V;    // Read no. of verices (V)
+
+    if (!source.is_open())
+        cout << "Error opening the file" << endl;
+    else {
+        while (getline(source, line))
+        {
+            istringstream stream(line);
+           V++;
+            int i=0;
+            while (getline(stream, convert, '\t')) {
+                n = stoi(convert);
+                AdjMatrix[row][i]=n;
+               cout<<AdjMatrix[row][i];
+                i++;
+            }
+            row++;
+
+        }
     }
-    // close file
-
-
 }
 
 // Display Adjacency Matrix
@@ -121,23 +135,83 @@ void Graphs::dispEdges() const
 // uses Dijkstra's Algorithm
 void Graphs::shPath(int s)
 {
-    // Implement the function here
+
+    for (int i = 0; i < V; i++) {
+        via[i] = -1;
+        distance[i] = INT_MAX;
+        processed[i] = 0;
+    }
+
+    distance[s] = 0;
+
+    for (int i = 0; i < V - 1; i++) {
+        int minIndex;
+        int minDist = INT_MAX;
+
+        for (int j = 0; j < V; j++) {
+            if (!processed[j] && distance[j] <= minDist) {
+                minDist = distance[j];
+                minIndex = j;
+            }
+        }
+        processed[i] = true;
+
+        for (int j = 0; j < V; j++) {
+
+            if (!processed[j] && AdjMatrix[i][j] && distance[i] != INT_MAX) {
+                if (distance[i]+AdjMatrix[i][j]<distance[j]) {
+                    distance[j]=distance[i]+AdjMatrix[i][j];
+                    via[j] = i;
+                }
+            }
+
+        }
+    }
+
+    cout << "Shortest Paths from Node " << Vname(s) << endl;
+    for (int i = 0; i < V; i++) {
+        cout<<"To node "<<Vname(i)<<" Total distance: "<<distance[i]<<endl;
+        cout<<"Path: ";
+        printPath(s, i);
+        cout << endl;
+    }
+
 }
 
 // Print path (vertex names) from source (s) to destination (i)
 void Graphs::printPath(int s, int i) const
 {
-    // Implement the function here
+    if (via[i]!=-1)
+        printPath(s,via[i]);
+    cout<<Vname(i)<< " -> ";
 }
 
 // Node Visit Function
-void Graphs::visit(int k)
+void Graphs::visit(int i)
 {
-    // Implement the function here
+    val[i] = order++;
+    cout<<Vname(i)<< " ";
+    for (int j = 0; j < V; j++) {
+        if (AdjMatrix[i][j] != 0 && val[j] == -1) {
+            visit(j);
+        }
+    }
 }
 
 // Depth First Search Traversal
-void Graphs::DFS()
-{
-    // Implement the function here
+void Graphs::DFS() {
+    for (int i=0;i<V;i++)
+        val[i] = -1;
+
+    cout<<endl;
+    cout<<"DFS Traversal"
+          ": ";
+
+    for (int i=0;i<V;i++) {
+        if (val[i] == -1)
+            visit(i);
+    }
+
+
 }
+
